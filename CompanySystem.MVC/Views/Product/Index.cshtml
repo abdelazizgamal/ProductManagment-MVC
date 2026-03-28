@@ -1,0 +1,96 @@
+﻿@model IEnumerable<ProductReadVM>
+<h1 class="bg-success text-white text-center">Products List</h1>
+<br />
+<hr />
+<br />
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+            <th scope="col">Count</th>
+            <th scope="col">Category</th>
+            <th scope="col">Image</th>
+            <th scope="col">Actions</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="row100 body">
+                <td class="cell100 column1">@item.Id</td>
+                <td class="cell100 column2">@item.Title</td>
+                <td class="cell100 column3">@item.Description</td>
+                <td class="cell100 column4">@item.Price</td>
+                <td class="cell100 column5">@item.Count</td>
+                <td class="cell100 column6">@item.Category</td>
+                <td class="cell100 column6"><img src="~/Images/Products/@item.ImgeUrl" class="img-thumbnail" style="width: 120px; height: 120px;" /></td>
+
+                <td class="cell100 column6">
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
+                    <a asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary">Edit</a>
+                    <button type="button" class="btn btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            data-productid="@item.Id"
+                            data-productname="@item.Title">
+                        Delete
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Product" asp-action="Create" class="btn btn-success">Creat New Product</a>
+
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Product</h5>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="productName"></strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-danger" id="deleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Get the Model Element
+        const deleteModal = document.getElementById('deleteModal');
+
+        // Add Event Listener to the Modal
+        // Built in Event
+        deleteModal.addEventListener('show.bs.modal', event => {
+            // Button that triggered the modal
+            const button = event.relatedTarget
+
+            // Extract info from data-* attributes
+            const productId = button.getAttribute('data-productid');
+            const productName = button.getAttribute('data-productname');
+
+            // Update Modal Content
+            deleteModal.querySelector('#productName').textContent = productName;
+
+            // Update Delete Button Action
+            const deleteBtn = deleteModal.querySelector('#deleteBtn');
+            deleteBtn.onclick= ()=> {
+                  window.location.href = `/Product/Delete/${productId}`;
+            };
+        });
+    </script>
+}

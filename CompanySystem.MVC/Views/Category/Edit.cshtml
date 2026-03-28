@@ -1,0 +1,29 @@
+﻿@model CategoryEditVM
+<h1 class="bg-success text-white text-center">Edit Category</h1>
+<br />
+<hr />
+<br />
+<form asp-action="Edit" asp-controller="Category" asp-route-id="@Model.Id" method="post">
+
+    @* <div class="form-group">
+        <label for="inputId">Id</label>
+        <input type="text" class="form-control" id="inputId" name="Id" value="@Model.Id" readonly>
+    </div> *@
+
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control">
+        <span asp-validation-for="Name" class="text-danger"></span>
+
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Edit</button>
+    <a asp-controller="Category" asp-action="Index" class="ms-5 btn btn-secondary">Cancel</a>
+
+</form>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+

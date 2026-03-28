@@ -1,0 +1,108 @@
+﻿@model ProductCreateVM
+<h1 class="bg-success text-white text-center">Create Product</h1>
+<br />
+<hr />
+<br />
+<form asp-controller="Product" asp-action="Create" enctype="multipart/form-data" method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    @* enctype = Encoding Type
+    It tells the browser how to send form data to the server.
+
+    The default encoding is:
+    application/x-www-form-urlencoded
+    That works for:
+    Text inputs
+    Numbers
+    Hidden fields
+    Selects
+    But it CANNOT send files.
+
+    Why multipart/form-data Is Required
+    The browser:
+    Splits the form into multiple parts
+    Sends file content as binary
+    Sends other fields separately
+    Adds boundaries between them
+    This is called multipart encoding.
+
+    Without it:
+    IFormFile will be null
+    File size will be 0
+    Model binding fails *@
+
+    <div class="form-group">
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" placeholder="Title">
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="form-label">Description</label>
+        <input asp-for="Description" class="form-control" placeholder="Description">
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="mb-3 form-group">
+        <label asp-for="Image" class="form-label"></label>
+        <input asp-for="Image" class="form-control" type="file" />
+        <span asp-validation-for="Image" class="text-danger"></span>
+    </div>
+    <div class="form-row ">
+        <div class="form-group col-md-6">
+            <label asp-for="Price" class="form-label">Price</label>
+            <input asp-for="Price" class="form-control" placeholder="Price">
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-2">
+            <label asp-for="Count" class="form-label">Count</label>
+            <input asp-for="Count" class="form-control" placeholder="Count">
+            <span asp-validation-for="Count" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label asp-for="CategoryId" class="form-label">Category</label>
+            <select asp-for="CategoryId" asp-items="@Model.Categories" class="form-control">
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+    </div>
+    <div class="form-group col-md-2">
+        <label asp-for="ExpiryDate" class="form-label">Count</label>
+        <input asp-for="ExpiryDate" class="form-control">
+        <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-controller="Product" asp-action="Index_V02" class="ms-5 btn btn-secondary">Cancel</a>
+
+</form>
+
+
+
+@section Scripts
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $.validator.addMethod("minMonths", function (value, element, minMonths) {
+
+            if (!value) return true;
+
+            var parts = value.split("-");
+            var exp = new Date(parts[0], parts[1] - 1, parts[2]);
+
+            var today = new Date();
+            var months = ((exp.getFullYear() - today.getFullYear()) * 12) + (exp.getMonth() - today.getMonth());
+            console.log(months);
+
+
+            return months >= minMonths;
+        });
+
+        $.validator.unobtrusive.adapters.addSingleVal("minMonths", "months");
+    </script>
+}

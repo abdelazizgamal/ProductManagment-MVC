@@ -1,0 +1,23 @@
+﻿@model ProductReadVM
+<h1 class="bg-success text-white text-center">Product Details</h1>
+<br />
+<hr />
+<br />
+<div class="d-flex flex-column align-items-center ">
+    <div class="w-50">
+
+        <partial name="_ProductDetailsPartial" , model="Model" />
+        <a asp-action="Index" asp-controller="Product" class="btn btn-outline-secondary">Back</a>
+
+    </div>
+</div>
+
+
+
+@* @section Scripts
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+
+} *@
