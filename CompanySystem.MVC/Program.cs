@@ -82,7 +82,7 @@ namespace CompanySystem.MVC
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
-            app.Run();
+            app.Run("http://0.0.0.0:80");
         }
     }
 }
