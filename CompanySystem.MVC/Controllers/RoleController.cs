@@ -8,7 +8,7 @@ using CompanySystem.DAL;
 
 namespace CompanySystem.MVC
 {
-    //[Authorize]
+    [Authorize]
     public class RoleController : Controller
     {
         /*------------------------------------------------------------------*/

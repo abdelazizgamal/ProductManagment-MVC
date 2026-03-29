@@ -53,7 +53,7 @@ namespace CompanySystem.MVC
             }
 
             // Add Default Role To User
-            IdentityResult addRoleResult = await _userManager.AddToRoleAsync(user, SystemRoles.Admin);
+            IdentityResult addRoleResult = await _userManager.AddToRoleAsync(user, SystemRoles.User);
             if (!addRoleResult.Succeeded)
             {
                 foreach (var errorItem in addRoleResult.Errors)
@@ -106,6 +106,12 @@ namespace CompanySystem.MVC
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

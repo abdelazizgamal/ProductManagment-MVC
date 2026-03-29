@@ -3,27 +3,104 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CompanySystem.MVC</title>
+    <title>@ViewData["Title"] - CompanySystem</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CompanySystem.MVC.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <partial name="_HeaderPartial" />
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h4 class="sidebar-title">CompanySystem</h4>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                            ▸ Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Category" asp-action="Index">
+                            ▸ Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">
+                            ▸ Products
+                        </a>
+                    </li>
+                    @if (User.IsInRole(SystemRoles.Admin))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Role" asp-action="Create">
+                                ▸ Roles
+                            </a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                            ▸ Privacy
+                        </a>
+                    </li>
+                </ul>
+                <hr class="sidebar-divider" />
+                <ul class="nav flex-column">
+                    @if (User.Identity.IsAuthenticated == false)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">
+                                ▸ Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">
+                                ▸ Register
+                            </a>
+                        </li>
+                    }
+                    else if (User.Identity.IsAuthenticated == true)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="#">
+                                @User.Identity.Name
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Logout">
+                                ▸ Logout
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-wrapper">
+            <header class="top-bar">
+                <div class="top-bar-title">
+                    @ViewData["Title"]
+                </div>
+                <div class="top-bar-user">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <span>Welcome, <strong>@User.Identity.Name</strong></span>
+                    }
+                </div>
+            </header>
+            <div class="main-content">
+                @RenderBody()
+            </div>
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - CompanySystem.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="app-footer">
+        <div class="footer-content">
+            &copy; 2026 CompanySystem
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

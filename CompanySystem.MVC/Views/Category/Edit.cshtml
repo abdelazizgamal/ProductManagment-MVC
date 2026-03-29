@@ -1,27 +1,36 @@
 ﻿@model CategoryEditVM
-<h1 class="bg-success text-white text-center">Edit Category</h1>
-<br />
-<hr />
-<br />
-<form asp-action="Edit" asp-controller="Category" asp-route-id="@Model.Id" method="post">
 
-    @* <div class="form-group">
-        <label for="inputId">Id</label>
-        <input type="text" class="form-control" id="inputId" name="Id" value="@Model.Id" readonly>
-    </div> *@
+@{
+    ViewData["Title"] = "Edit Category";
+}
 
-    <div class="form-group">
-        <label asp-for="Name">Name</label>
-        <input asp-for="Name" class="form-control">
-        <span asp-validation-for="Name" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Edit Category</h2>
 
+                <form asp-action="Edit" asp-controller="Category" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                </form>
+
+                <div class="mt-3 text-center">
+                    <a asp-controller="Category" asp-action="Index" class="text-decoration-none">← Back to list</a>
+                </div>
+            </div>
+        </div>
     </div>
-
-
-    <button type="submit" class="btn btn-primary">Edit</button>
-    <a asp-controller="Category" asp-action="Index" class="ms-5 btn btn-secondary">Cancel</a>
-
-</form>
+</div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>

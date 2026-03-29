@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <h1 class="text-danger mb-3">🔒 Access Denied</h1>
+                <h4 class="card-title mb-3">Sorry, you don't have permission to access this page</h4>
+                
+                <p class="text-muted mb-4">
+                    This page is restricted to administrators only. 
+                    
+                </p>
+
+                <div class="d-flex gap-2 justify-content-center">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a href="javascript:history.back()" class="btn btn-outline-primary">← Go Back</a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-danger">Sign Out</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Sign In</a>
+                    }
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

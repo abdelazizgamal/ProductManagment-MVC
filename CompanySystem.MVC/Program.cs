@@ -33,19 +33,12 @@ namespace CompanySystem.MVC
                 })
                 .AddEntityFrameworkStores<AppDbContext>();
 
+            // Configure Identity options
             builder.Services.Configure<IdentityOptions>(options =>
             {
-                //options.Lockout.MaxFailedAccessAttempts = 5;
-                //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-                //options.Lockout.AllowedForNewUsers = true;  
-
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
-
-                //options.User.AllowedUserNameCharacters = "@";
-
                 options.User.RequireUniqueEmail = true;
-
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
@@ -53,6 +46,13 @@ namespace CompanySystem.MVC
                 options.Password.RequiredLength = 4;
             });
 
+            // Configure cookie options for access denied
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = new PathString("/Account/AccessDenied");
+                options.LoginPath = new PathString("/Account/Login");
+                options.LogoutPath = new PathString("/Account/Logout");
+            });
 
             //builder.Services.AddScoped<IProductManager, ProductManager>();
             builder.Services.AddBLLServices();
@@ -74,6 +74,7 @@ namespace CompanySystem.MVC
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
@@ -82,7 +83,7 @@ namespace CompanySystem.MVC
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
-            app.Run("http://0.0.0.0:80");
+            app.Run();
         }
     }
 }

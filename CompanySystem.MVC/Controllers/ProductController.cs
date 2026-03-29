@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CompanySystem.BLL;
 using Microsoft.AspNetCore.Authorization;
+
 namespace CompanySystem.MVC
 {
     public class ProductController : Controller
     {
-        ////db
-        //private readonly AppDbContext db = new AppDbContext();
         private readonly IProductManager _productManager;
 
         public ProductController(IProductManager productManager)
@@ -14,8 +13,6 @@ namespace CompanySystem.MVC
             _productManager = productManager;
         }
 
-
-        
         [HttpGet]
         public IActionResult Index()
         {
@@ -23,7 +20,7 @@ namespace CompanySystem.MVC
             return View(productsVm);
         }
 
-        [Authorize(Roles =$"{SystemRoles.User},{SystemRoles.Admin}")]
+        [Authorize(Roles = $"{SystemRoles.User},{SystemRoles.Admin}")]
         [HttpGet]
         public IActionResult Details(int id)
         {
@@ -35,6 +32,7 @@ namespace CompanySystem.MVC
            
             return View(productReadVm);
         }
+
         [Authorize(Roles = SystemRoles.Admin)]
         [HttpGet]
         public IActionResult Create()
@@ -42,22 +40,21 @@ namespace CompanySystem.MVC
             ProductCreateVM productVm = _productManager.ReturnListCategories_C();
             return View(productVm);
         }
-        [Authorize(Roles = SystemRoles.Admin)]
 
+        [Authorize(Roles = SystemRoles.Admin)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(ProductCreateVM productVm)
         { 
             if (productVm.Image != null)
             {
-                
                 var isImage = ImageHelper.IsImage(productVm.Image.FileName);
                 if (!isImage)
                 {
-                    // Mark model as invalid instead of throwing
                     ModelState.AddModelError("Image", "Invalid file type. Only image files are allowed.");
                 }
             }
+            
             if (!ModelState.IsValid)
             {
                 var productCreateVMWithCategories = _productManager.ReturnListCategories_C();
@@ -68,23 +65,25 @@ namespace CompanySystem.MVC
             _productManager.CreateProduct(productVm);
             return RedirectToAction(nameof(Index));
         }
-        [Authorize]
+
+        [Authorize(Roles = SystemRoles.Admin)]
         [HttpGet]
         public IActionResult Edit(int id)
         {
-
-
             var product = _productManager.GetProductByIdEdit(id);
             if (product == null)
             {
                 return RedirectToAction(nameof(Index));
             }
+            
             var productEditVMWithCategories = _productManager.ReturnListCategories_E();
             product.Categories = productEditVMWithCategories.Categories;
             return View(product);
         }
-        [Authorize]
+
+        [Authorize(Roles = SystemRoles.Admin)]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(ProductEditVM productVm)
         {
             if (productVm.Image != null)
@@ -92,10 +91,10 @@ namespace CompanySystem.MVC
                 var isImage = ImageHelper.IsImage(productVm.Image.FileName);
                 if (!isImage)
                 {
-                    // Mark model as invalid instead of throwing
                     ModelState.AddModelError("Image", "Invalid file type. Only image files are allowed.");
                 }
             }
+            
             if (!ModelState.IsValid)
             {
                 var productEditVMWithCategories = _productManager.ReturnListCategories_E();
@@ -115,16 +114,13 @@ namespace CompanySystem.MVC
         }
 
         [Authorize(Roles = SystemRoles.Admin)]
+        [HttpPost]
         public IActionResult Delete(int id)
         {
             var status = _productManager.DeleteProduct(id);
-
-            if (status == 0)
-            {
-                return RedirectToAction(nameof(Index));
-            }
             return RedirectToAction(nameof(Index));
         }
+
         public IActionResult IsTitleUnique(string title)
         {
             var isUnique = _productManager.TitleExist(title);
@@ -135,8 +131,6 @@ namespace CompanySystem.MVC
 
             return Json(true);
         }
-
-
     }
 }
 

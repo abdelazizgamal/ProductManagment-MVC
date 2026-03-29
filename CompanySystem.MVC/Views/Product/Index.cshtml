@@ -1,68 +1,82 @@
 ﻿@model IEnumerable<ProductReadVM>
-<h1 class="bg-success text-white text-center">Products List</h1>
-<br />
-<hr />
-<br />
-<table class="table">
-    <thead class="thead-dark">
-        <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Title</th>
-            <th scope="col">Description</th>
-            <th scope="col">Price</th>
-            <th scope="col">Count</th>
-            <th scope="col">Category</th>
-            <th scope="col">Image</th>
-            <th scope="col">Actions</th>
 
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr class="row100 body">
-                <td class="cell100 column1">@item.Id</td>
-                <td class="cell100 column2">@item.Title</td>
-                <td class="cell100 column3">@item.Description</td>
-                <td class="cell100 column4">@item.Price</td>
-                <td class="cell100 column5">@item.Count</td>
-                <td class="cell100 column6">@item.Category</td>
-                <td class="cell100 column6"><img src="~/Images/Products/@item.ImgeUrl" class="img-thumbnail" style="width: 120px; height: 120px;" /></td>
+@{
+    ViewData["Title"] = "Products";
+}
 
-                <td class="cell100 column6">
-                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
-                    <a asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary">Edit</a>
-                    <button type="button" class="btn btn-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteModal"
-                            data-productid="@item.Id"
-                            data-productname="@item.Title">
-                        Delete
-                    </button>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Products</h2>
+    @if (User.IsInRole(SystemRoles.Admin))
+    {
+        <a asp-controller="Product" asp-action="Create" class="btn btn-success">+ New Product</a>
+    }
+</div>
 
-                </td>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Count</th>
+                    <th>Category</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Title</td>
+                        <td>@item.Description</td>
+                        <td>${@item.Price}</td>
+                        <td>@item.Count</td>
+                        <td>@item.Category</td>
+                        <td><img src="~/Images/Products/@item.ImgeUrl" class="img-thumbnail" style="width: 50px; height: 50px;" alt="@item.Title" /></td>
+                        <td>
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                            @if (User.IsInRole(SystemRoles.Admin))
+                            {
+                                <a asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-productid="@item.Id"
+                                        data-productname="@item.Title">
+                                    Delete
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
-            </tr>
-        }
-    </tbody>
-</table>
-
-<a asp-controller="Product" asp-action="Create" class="btn btn-success">Creat New Product</a>
-
-
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Delete Product</h5>
+                <h5 class="modal-title">Delete Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete <strong id="productName"></strong>
+                Are you sure you want to delete <strong id="productName"></strong>?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-danger" id="deleteBtn">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteId" name="id" value="">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>
@@ -70,27 +84,16 @@
 
 @section Scripts {
     <script>
-        // Get the Model Element
         const deleteModal = document.getElementById('deleteModal');
-
-        // Add Event Listener to the Modal
-        // Built in Event
         deleteModal.addEventListener('show.bs.modal', event => {
-            // Button that triggered the modal
-            const button = event.relatedTarget
-
-            // Extract info from data-* attributes
+            const button = event.relatedTarget;
             const productId = button.getAttribute('data-productid');
             const productName = button.getAttribute('data-productname');
-
-            // Update Modal Content
             deleteModal.querySelector('#productName').textContent = productName;
-
-            // Update Delete Button Action
-            const deleteBtn = deleteModal.querySelector('#deleteBtn');
-            deleteBtn.onclick= ()=> {
-                  window.location.href = `/Product/Delete/${productId}`;
-            };
+            deleteModal.querySelector('#deleteId').value = productId;
+            
+            const deleteForm = deleteModal.querySelector('#deleteForm');
+            deleteForm.action = `/Product/Delete/${productId}`;
         });
     </script>
 }

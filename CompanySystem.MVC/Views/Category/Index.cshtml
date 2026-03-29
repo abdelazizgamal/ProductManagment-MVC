@@ -1,59 +1,72 @@
 ﻿@model IEnumerable<CategoryReadVM>
-<h1 class="bg-success text-white text-center">Categories List</h1>
-<br />
-<hr />
-<br />
-<table class="table w-50 text-center">
-    <thead class="thead-dark">
-        <tr>
-            <th scope="col">@Html.DisplayNameFor(m => m.Id)</th>
-            <th scope="col">@Html.DisplayNameFor(m => m.Name)</th>
-            <th scope="col">Actions</th>
 
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr class="row100 body">
-                <td class="cell100 column1">@item.Id</td>
-                <td class="cell100 column2">@item.Name</td>
+@{
+    ViewData["Title"] = "Categories";
+}
 
-                <td class="cell100 column3">
-                    @Html.ActionLink("Details", "Details", "Category", new { id = item.Id }, new { @class = "btn btn-primary" })
-                    @Html.ActionLink("Edit", "Edit", "Category", new { id = item.Id }, new { @class = "btn btn-outline-secondary" })
-                    <button type="button" class="btn btn-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteModal"
-                            data-categoryId="@item.Id"
-                            data-categoryName="@item.Name">
-                        Delete
-                    </button>
-                </td>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Categories</h2>
+    @if (User.IsInRole(SystemRoles.Admin))
+    {
+        <a asp-controller="Category" asp-action="Create" class="btn btn-success">+ New Category</a>
+    }
+</div>
 
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.First().Id)</th>
+                    <th>@Html.DisplayNameFor(m => m.First().Name)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>
+                            <a asp-controller="Category" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                            @if (User.IsInRole(SystemRoles.Admin))
+                            {
+                                <a asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-categoryId="@item.Id"
+                                        data-categoryName="@item.Name">
+                                    Delete
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
-@Html.ActionLink("Create New Category", "Create", "Category", null, new { @class = "btn btn-success" })
-
-
-
-
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Delete Category</h5>
+                <h5 class="modal-title">Delete Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete <strong id="categoryname"></strong>
+                Are you sure you want to delete <strong id="categoryname"></strong>?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-danger" id="deleteBtn">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteId" name="id" value="">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>
@@ -61,27 +74,16 @@
 
 @section Scripts {
     <script>
-        // Get the Model Element
         const deleteModal = document.getElementById('deleteModal');
-
-        // Add Event Listener to the Modal
-        // Built in Event
         deleteModal.addEventListener('show.bs.modal', event => {
-            // Button that triggered the modal
-            const button = event.relatedTarget
-
-            // Extract info from data-* attributes
+            const button = event.relatedTarget;
             const categoryId = button.getAttribute('data-categoryId');
             const categoryName = button.getAttribute('data-categoryName');
-
-            // Update Modal Content
             deleteModal.querySelector('#categoryname').textContent = categoryName;
-
-            // Update Delete Button Action
-            const deleteBtn = deleteModal.querySelector('#deleteBtn');
-            deleteBtn.onclick= ()=> {
-                  window.location.href = `/Category/Delete/${categoryId}`;
-            };
+            deleteModal.querySelector('#deleteId').value = categoryId;
+            
+            const deleteForm = deleteModal.querySelector('#deleteForm');
+            deleteForm.action = `/Category/Delete/${categoryId}`;
         });
     </script>
 }
